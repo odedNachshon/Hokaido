@@ -1,0 +1,1 @@
+Open index.html in a browser. Images load from Wikimedia Commons.
