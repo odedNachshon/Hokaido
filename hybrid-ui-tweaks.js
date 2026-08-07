@@ -1,5 +1,26 @@
 (() => {
-  const ASSET_VERSION = 'ui9';
+  const ASSET_VERSION = 'ui10';
+
+  const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
+
+  const patchDay8Morning = () => {
+    if (currentDay() !== '8.8') return;
+    const rows = [...document.querySelectorAll('.schedule tbody tr')];
+    if (rows.length < 3) return;
+    if (rows[0].textContent.includes('Hakodate Morning Market')) return;
+
+    const setRow = (row, time, title, desc, mapLabel, mapQuery) => {
+      const timeCell = row.querySelector('td:first-child');
+      const contentCell = row.querySelector('td:last-child');
+      if (!timeCell || !contentCell) return;
+      timeCell.innerHTML = `<strong>${time}</strong>`;
+      contentCell.innerHTML = `<strong>${title}</strong><br><span>${desc}</span>${mapLabel ? `<div class="inline-maps"><a class="inline-map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}">${mapLabel}</a></div>` : ''}`;
+    };
+
+    setRow(rows[0], '07:30–08:30', 'Hakodate Morning Market + ארוחת בוקר', 'ללכת לשוק לפני איסוף הרכב, כשהוא פעיל ונוח להגיע אליו ברגל מאזור התחנה. לאכול כאן ארוחת בוקר/פירות ים.', 'שוק הבוקר', 'Hakodate Morning Market');
+    setRow(rows[1], '08:30–08:45', 'חזרה למלון וצ׳ק־אאוט', 'איסוף מזוודות ויציאה לשדה התעופה.');
+    setRow(rows[2], '09:00–09:45', 'נסיעה לשדה התעופה', 'להשאיר זמן להגיע לסניף ההשכרה בנחת.', 'Hakodate Airport', 'Hakodate Airport');
+  };
 
   const formatTimes = () => {
     document.querySelectorAll('.schedule td:first-child strong').forEach(el => {
@@ -28,7 +49,6 @@
   };
 
   const gmailMessageUrl = hotel => `https://mail.google.com/mail/u/odedn72@gmail.com/#all/${hotel.messageId}`;
-  const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
 
   const hotelBubble = h => {
     const d = document.createElement('details');
@@ -87,6 +107,7 @@
   };
 
   const run = () => {
+    patchDay8Morning();
     formatTimes();
     placeHotelBubbles();
     normalizeOtherGmailLinks();
