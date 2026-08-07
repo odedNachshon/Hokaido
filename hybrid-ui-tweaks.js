@@ -1,4 +1,6 @@
 (() => {
+  const ASSET_VERSION = 'ui9';
+
   const formatTimes = () => {
     document.querySelectorAll('.schedule td:first-child strong').forEach(el => {
       if (el.querySelector('.time-stack')) return;
@@ -74,10 +76,21 @@
     });
   };
 
+  const versionDayLinks = () => {
+    document.querySelectorAll('a[href^="day-"]').forEach(a => {
+      try {
+        const u = new URL(a.getAttribute('href'), location.href);
+        u.searchParams.set('v', ASSET_VERSION);
+        a.setAttribute('href', `${u.pathname.split('/').pop()}?${u.searchParams.toString()}`);
+      } catch (_) {}
+    });
+  };
+
   const run = () => {
     formatTimes();
     placeHotelBubbles();
     normalizeOtherGmailLinks();
+    versionDayLinks();
   };
 
   run();
