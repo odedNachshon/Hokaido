@@ -1,31 +1,42 @@
 (() => {
-  const ASSET_VERSION = 'ui15';
+  const ASSET_VERSION = 'ui16';
   const GMAIL_ACCOUNT = 'odedn72@gmail.com';
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
 
+  const makeRow = (time, title, desc, mapLabel, mapQuery) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${time}</strong></td><td><strong>${title}</strong><br><span>${desc || ''}</span>${mapLabel ? `<div class="inline-maps"><a class="inline-map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}">${mapLabel}</a></div>` : ''}</td>`;
+    return tr;
+  };
+
   const patchDay8Plan = () => {
     if (currentDay() !== '8.8') return;
-    const rows = [...document.querySelectorAll('.schedule tbody tr')];
-    if (rows.length < 8) return;
-    if (rows[4]?.textContent.includes('Kikuchi')) return;
+    const tbody = document.querySelector('.schedule tbody');
+    if (!tbody || tbody.dataset.ui16Plan === '1') return;
 
-    const setRow = (row, time, title, desc, mapLabel, mapQuery) => {
-      const timeCell = row.querySelector('td:first-child');
-      const contentCell = row.querySelector('td:last-child');
-      if (!timeCell || !contentCell) return;
-      timeCell.innerHTML = `<strong>${time}</strong>`;
-      contentCell.innerHTML = `<strong>${title}</strong><br><span>${desc}</span>${mapLabel ? `<div class="inline-maps"><a class="inline-map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}">${mapLabel}</a></div>` : ''}`;
-    };
+    const rows = [
+      ['08:00–08:35','בוקר רגוע + צ׳ק־אאוט','בלי ארוחת בוקר גדולה במלון — יוצאים בזמן ומשאירים את הארוחה לאחר איסוף הרכב.'],
+      ['08:45–09:45','נסיעה לשדה התעופה · כ־60 דק׳','מונית ישירות מ־Shin-Hakodate-Hokuto לאזור Hakodate Airport / Budget, עם מרווח לפני האיסוף.','Hakodate Airport','Hakodate Airport'],
+      ['09:45–10:00','הגעה ל־Budget והתארגנות','זמן לשאטל/דלפק ולמסמכים לפני שעת האיסוף.','Budget','Budget Rent a Car Hakodate Airport'],
+      ['10:00','איסוף רכב Budget','Reservation 101847607. צילום הרכב, ETC, GPS, דלק ונזקים קודמים.','Budget','Budget Rent a Car Hakodate Airport'],
+      ['10:05–10:20','נסיעה ל־Kikuchi · כ־15 דק׳','עצירה ראשונה קצרה אחרי האיסוף, באזור Yunokawa.','Kikuchi','Coffee Room Kikuchi Hakodate'],
+      ['10:20–11:00','Kikuchi — ארוחת בוקר / בראנץ׳','קפה, סנדוויצ׳ים ומנות קלות. לא למשוך יותר מדי זמן כדי להשאיר מקום לארוחת הערב במלון.','Kikuchi','Coffee Room Kikuchi Hakodate'],
+      ['11:00–11:20','נסיעה ל־Goryokaku · כ־20 דק׳','ממשיכים מ־Kikuchi ישירות ל־Goryokaku.','Goryokaku','Goryokaku Tower'],
+      ['11:20–12:50','Goryokaku','מגדל תצפית + הליכה קצרה.','Goryokaku Tower','Goryokaku Tower'],
+      ['12:50–13:30','נסיעה לכיוון Onuma · כ־40 דק׳','עצירה אופציונלית בדרך צפונה; לא חוזרים לתוך Hakodate.','Onuma Park','Onuma Quasi-National Park Hokkaido'],
+      ['13:30–14:00','Late lunch / snack אופציונלי — Onuma','רק אם רעבים: משהו קל ומהיר. ארוחת הערב במלון כלולה ומתחילה ב־17:30.','Onuma Park','Onuma Quasi-National Park Hokkaido'],
+      ['14:00–16:10','נסיעה ל־WE Hotel Toya · כ־2 ש׳ 10 דק׳','להשאיר מרווח קטן לעצירת שירותים/קפה לפי הצורך.','WE Hotel Toya','WE Hotel Toya'],
+      ['16:10–16:30','צ׳ק־אין WE Hotel Toya','צ׳ק־אין מ־15:00. ארוחת ערב וארוחת בוקר כלולות בהזמנה.','WE Hotel Toya','WE Hotel Toya'],
+      ['16:30–17:30','מנוחה / אונסן / מרפסת','זמן להתארגן וליהנות מהנוף לפני ארוחת הערב.'],
+      ['17:30–19:00','ארוחת ערב במלון — כלולה','EZO Cuisine. חלון ארוחת הערב 17:30–21:00; הזמנה אחרונה ב־20:00.'],
+      ['19:15–20:20','Lake Toya — הליכה על שפת האגם','הליכה רגועה, שקיעה ותמונות.','Lake Toya','Lake Toya'],
+      ['20:45–21:05','Lake Toya Long Run Fireworks','לבדוק באותו יום שלא בוטל בגלל רוח או מזג אוויר.','Lake Toya Onsen','Lake Toya Onsen'],
+      ['21:05–22:00','אונסן / שתייה / מנוחה','לסיים את היום רגוע.']
+    ];
 
-    setRow(rows[0], '08:00–08:35', 'בוקר רגוע + צ׳ק־אאוט', 'בלי ארוחת בוקר גדולה במלון — יוצאים בזמן ומשאירים את הארוחה לאחר איסוף הרכב.');
-    setRow(rows[1], '08:45–09:45', 'נסיעה לשדה התעופה', 'מומלץ במונית ישירות מ־Shin-Hakodate-Hokuto כדי להגיע בנחת לפני איסוף הרכב.', 'Hakodate Airport', 'Hakodate Airport');
-    setRow(rows[2], '09:45–10:00', 'הגעה ל־Budget והתארגנות', 'זמן קצר לשאטל/דלפק ולמסמכים לפני שעת האיסוף.', 'Budget', 'Budget Rent a Car Hakodate Airport');
-    setRow(rows[3], '10:00', 'איסוף רכב Budget', 'Reservation 101847607. צילום הרכב, ETC, GPS, דלק ונזקים קודמים.', 'Budget', 'Budget Rent a Car Hakodate Airport');
-    setRow(rows[4], '10:20–11:00', 'Kikuchi — ארוחת בוקר / בראנץ׳', 'עצירה קצרה ב־kissaten מקומי בדרך לעיר: קפה, סנדוויצ׳ים ומנות קלות. לא למשוך יותר מדי זמן.', 'Kikuchi', 'Coffee Room Kikuchi Hakodate');
-    setRow(rows[5], '11:00–11:20', 'נסיעה ל־Goryokaku', 'ממשיכים מ־Kikuchi ישירות ל־Goryokaku.', 'Goryokaku', 'Goryokaku Tower');
-    setRow(rows[6], '11:20–12:50', 'Goryokaku', 'מגדל תצפית + הליכה קצרה. אין צורך בארוחת צהריים נוספת אחרי Kikuchi.', 'Goryokaku Tower', 'Goryokaku Tower');
-    setRow(rows[7], '13:00–16:00', 'נסיעה ל־Lake Toya', 'כולל עצירת שירותים/קפה קצרה לפי הצורך.', 'WE Hotel Toya', 'WE Hotel Toya');
+    tbody.replaceChildren(...rows.map(r => makeRow(...r)));
+    tbody.dataset.ui16Plan = '1';
   };
 
   const formatTimes = () => {
@@ -146,6 +157,19 @@
     });
   };
 
+  const driveDurationByTitle = [
+    [/Lake Shikotsu/i,'כ־1 ש׳ 10 דק׳'],
+    [/Furano/i,'כ־2 ש׳ 30 דק׳'],
+    [/Ningle Terrace/i,'כ־45 דק׳'],
+    [/Shirogane Blue Pond/i,'כ־45 דק׳'],
+    [/Shirahige/i,'כ־10 דק׳'],
+    [/Shikisai/i,'כ־35 דק׳'],
+    [/Farm Tomita/i,'כ־25 דק׳'],
+    [/Asahidake/i,'כ־1 ש׳ 30 דק׳'],
+    [/Otaru/i,'כ־2 ש׳ 30 דק׳'],
+    [/Sapporo/i,'כ־45–60 דק׳']
+  ];
+
   const decorateDriveRows = () => {
     document.querySelectorAll('.schedule tbody tr').forEach(row => {
       const cell = row.querySelector('td:last-child');
@@ -155,6 +179,12 @@
       if (!title || title.dataset.driveIcon === '1') return;
       const text = title.textContent.trim();
       if (!/^(נסיעה\b|Drive\b)/i.test(text)) return;
+
+      if (!/כ־/.test(text)) {
+        const match = driveDurationByTitle.find(([re]) => re.test(text));
+        if (match) title.append(` · ${match[1]}`);
+      }
+
       const icon = document.createElement('span');
       icon.className = 'drive-icon';
       icon.textContent = '🚗';
