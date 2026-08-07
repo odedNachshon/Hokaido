@@ -6,10 +6,25 @@
 .schedule td:last-child>span{display:block;margin-top:1px!important;line-height:1.4}
 .inline-maps{margin-top:7px!important;gap:6px!important}
 .inline-map{min-height:33px!important;padding:5px 10px!important;font-size:.76rem!important}
-.time-stack{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;line-height:1;direction:ltr;text-align:center;font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;font-weight:600;letter-spacing:-.02em}
+.time-stack{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;line-height:1.02;direction:ltr;text-align:center;font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif;font-weight:600;letter-spacing:-.02em}
 .time-stack .time-start{font-size:.72rem}
 .time-stack .time-end{font-size:.64rem;color:var(--muted);margin-top:2px}
-.time-stack .time-end::before{content:'↓';display:block;font-size:.5rem;line-height:.68;color:#9aa8a1;margin-bottom:1px}
+.time-stack .time-end::before{content:'↓';display:block;font-size:.52rem;line-height:.7;color:#9aa8a1;margin-bottom:1px}
 
-@media(max-width:760px){.schedule thead{display:none}.schedule{display:block}.schedule tbody{display:block}.schedule tr{display:grid;grid-template-columns:48px 1fr}.schedule td:first-child{width:48px!important;max-width:48px!important;padding:13px 3px 15px 0!important;text-align:center}.schedule td:first-child strong{font-family:"Arial Narrow","Roboto Condensed",Arial,sans-serif!important;font-size:.69rem!important;font-weight:600!important;line-height:1!important;white-space:normal!important;letter-spacing:-.02em!important}.schedule td:last-child{padding:13px 10px 15px 0}.schedule td:last-child>span{margin-top:1px!important}.plan-grid{grid-template-columns:1fr}.activity-detail-body{padding-inline:12px}.activity-detail summary{padding-inline:12px}.gallery{display:none}.day-nav .back{min-height:52px}.topbar .wrap{overflow:hidden}.navlinks{overscroll-behavior-inline:contain}}
-@media(max-width:390px){.schedule tr{grid-template-columns:46px 1fr}.schedule td:first-child{width:46px!important;max-width:46px!important}.time-stack .time-start{font-size:.69rem}.time-stack .time-end{font-size:.61rem}}
+/* Compact hotel confirmation bubbles */
+.hotel-booking-group{display:grid;gap:8px;margin:0 0 14px}
+.hotel-booking-bubble{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 14px rgba(16,42,32,.045);overflow:hidden}
+.hotel-booking-bubble summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:9px;min-height:48px;padding:8px 12px}
+.hotel-booking-bubble summary::-webkit-details-marker{display:none}
+.hotel-icon{font-size:1.05rem;flex:0 0 auto}
+.hotel-summary{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.15}
+.hotel-summary b{font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hotel-summary small{font-size:.72rem;color:var(--muted);margin-top:3px}
+.hotel-chevron{color:var(--muted);font-size:1rem;transition:transform .15s}.hotel-booking-bubble[open] .hotel-chevron{transform:rotate(180deg)}
+.hotel-booking-body{padding:2px 12px 12px}
+.hotel-booking-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface-2);border-radius:10px;padding:9px 10px;margin-bottom:8px;font-size:.82rem}
+.hotel-booking-meta span{color:var(--muted)}.hotel-booking-meta strong{font-family:var(--mono);direction:ltr;font-size:.86rem;color:var(--rail-ink)}
+.hotel-mail-cta{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:10px;text-decoration:none;background:var(--sun-soft);color:var(--sun-ink)!important;font-weight:800;font-size:.86rem}
+
+@media(max-width:760px){.schedule thead{display:none}.schedule{display:block}.schedule tbody{display:block}.schedule tr{display:grid;grid-template-columns:52px 1fr}.schedule td:first-child{width:52px!important;max-width:52px!important;padding:13px 3px 15px 0!important;text-align:center}.schedule td:first-child strong{font-size:.7rem!important;line-height:1.02!important;white-space:normal!important}.schedule td:last-child{padding:13px 12px 15px 0}.schedule td:last-child>span{margin-top:1px!important}.plan-grid{grid-template-columns:1fr}.activity-detail-body{padding-inline:12px}.activity-detail summary{padding-inline:12px}.gallery{display:none}.day-nav .back{min-height:52px}.topbar .wrap{overflow:hidden}.navlinks{overscroll-behavior-inline:contain}}
+@media(max-width:390px){.schedule tr{grid-template-columns:48px 1fr}.schedule td:first-child{width:48px!important;max-width:48px!important}.time-stack .time-start{font-size:.68rem}.time-stack .time-end{font-size:.6rem}}
