@@ -8,7 +8,25 @@
       el.innerHTML = `<span class="time-stack"><span class="time-start">${m[1]}</span><span class="time-end">${m[2]}</span></span>`;
     });
   };
-  splitTimes();
-  const observer = new MutationObserver(splitTimes);
+
+  const forceGmailUser = () => {
+    document.querySelectorAll('a[href*="mail.google.com/mail/"]').forEach(a => {
+      try {
+        const u = new URL(a.href);
+        const path = u.pathname.replace(/^\/mail\/u\/\d+\/?/, '/mail/');
+        u.pathname = path;
+        u.searchParams.set('authuser', 'odedn72@gmail.com');
+        a.href = u.toString();
+      } catch (_) {
+        a.href = a.href
+          .replace(/authuser=[^&#]*/i, 'authuser=odedn72%40gmail.com')
+          .replace(/\/mail\/u\/\d+\//, '/mail/');
+      }
+    });
+  };
+
+  const apply = () => { splitTimes(); forceGmailUser(); };
+  apply();
+  const observer = new MutationObserver(apply);
   observer.observe(document.body,{childList:true,subtree:true});
 })();
