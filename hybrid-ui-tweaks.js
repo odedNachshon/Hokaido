@@ -1,5 +1,5 @@
 (() => {
-  const ASSET_VERSION = 'ui11';
+  const ASSET_VERSION = 'ui12';
   const GMAIL_ACCOUNT = 'odedn72@gmail.com';
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
@@ -38,27 +38,20 @@
   };
 
   const hotelByDay = {
-    '5.8': [{name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5837788989', messageId:'19fb78f70ae73b9f', aliases:['Hotel Indigo','המלון']}],
-    '6.8': [{name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', messageId:'19fcc7b2e34e2151', aliases:['ReLabo']}],
-    '7.8': [{name:"La’gent Plaza Hakodate Hokuto", platform:'Agoda', number:'1755948686', messageId:'19fb8f963efcca44', aliases:["צ׳ק־אין ב־La’gent Plaza","La’gent Plaza","La'gent Plaza"]}],
-    '8.8': [{name:'WE Hotel Toya - Dusit Collection', platform:'Booking.com', number:'5090390400', messageId:'19fb94e3568e722d', aliases:['צ׳ק־אין WE Hotel Toya','WE Hotel Toya']}],
-    '9.8': [{name:'Hotel Mahoroba', platform:'Booking.com', number:'6550170726', messageId:'19fb95f286b4fc8a', aliases:['צ׳ק־אין Hotel Mahoroba','Hotel Mahoroba']}],
-    '10.8': [{name:'La Vista Furano Hills', platform:'Booking.com', number:'5675536037', messageId:'19fb9675cdd05536', aliases:['צ׳ק־אין La Vista Furano Hills','La Vista Furano Hills']}],
-    '12.8': [{name:'La Vista Daisetsuzan', platform:'Agoda', number:'1755974229', messageId:'19fb96cbd82ace2a', aliases:['צ׳ק־אין La Vista Daisetsuzan','La Vista Daisetsuzan']}],
-    '13.8': [{name:'Solaria Nishitetsu Hotel Sapporo', platform:'Booking.com', number:'6515535616', messageId:'19fb97036b54782c', aliases:['צ׳ק־אין Solaria Nishitetsu','Solaria Nishitetsu']}],
-    '14.8': [{name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', messageId:'19fd1d80fb756f17', aliases:['Hotel Indigo שיבויה','Hotel Indigo']}]
+    '5.8': [{name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5837788989', aliases:['Hotel Indigo','המלון']}],
+    '6.8': [{name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', aliases:['ReLabo']}],
+    '7.8': [{name:"La’gent Plaza Hakodate Hokuto", platform:'Agoda', number:'1755948686', aliases:["צ׳ק־אין ב־La’gent Plaza","La’gent Plaza","La'gent Plaza"]}],
+    '8.8': [{name:'WE Hotel Toya - Dusit Collection', platform:'Booking.com', number:'5090390400', aliases:['צ׳ק־אין WE Hotel Toya','WE Hotel Toya']}],
+    '9.8': [{name:'Hotel Mahoroba', platform:'Booking.com', number:'6550170726', aliases:['צ׳ק־אין Hotel Mahoroba','Hotel Mahoroba']}],
+    '10.8': [{name:'La Vista Furano Hills', platform:'Booking.com', number:'5675536037', aliases:['צ׳ק־אין La Vista Furano Hills','La Vista Furano Hills']}],
+    '12.8': [{name:'La Vista Daisetsuzan', platform:'Agoda', number:'1755974229', aliases:['צ׳ק־אין La Vista Daisetsuzan','La Vista Daisetsuzan']}],
+    '13.8': [{name:'Solaria Nishitetsu Hotel Sapporo', platform:'Booking.com', number:'6515535616', aliases:['צ׳ק־אין Solaria Nishitetsu','Solaria Nishitetsu']}],
+    '14.8': [{name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', aliases:['Hotel Indigo שיבויה','Hotel Indigo']}]
   };
 
-  const gmailChooserUrl = target => {
-    const chooser = new URL('https://accounts.google.com/AccountChooser');
-    chooser.searchParams.set('Email', GMAIL_ACCOUNT);
-    chooser.searchParams.set('continue', target);
-    return chooser.toString();
-  };
-
-  const gmailMessageUrl = hotel => {
-    const target = `https://mail.google.com/mail/b/${encodeURIComponent(GMAIL_ACCOUNT)}/#all/${hotel.messageId}`;
-    return gmailChooserUrl(target);
+  const gmailSearchUrl = (number, name) => {
+    const query = `"${number}" OR "${name}"`;
+    return `https://mail.google.com/mail/?authuser=${encodeURIComponent(GMAIL_ACCOUNT)}#search/${encodeURIComponent(query)}`;
   };
 
   const hotelBubble = h => {
@@ -69,7 +62,7 @@
       <summary><span class="hotel-icon">🏨</span><span class="hotel-summary"><b>פרטי המלון וההזמנה</b><small>${h.name}</small></span><span class="hotel-chevron">⌄</span></summary>
       <div class="hotel-booking-body">
         <div class="hotel-booking-meta"><span>${h.platform}</span><strong>${h.number}</strong></div>
-        <a class="hotel-mail-cta" target="_blank" rel="noopener" href="${gmailMessageUrl(h)}">✉️ פתח את מייל האישור</a>
+        <a class="hotel-mail-cta" target="_blank" rel="noopener" href="${gmailSearchUrl(h.number, h.name)}">✉️ פתח את מייל האישור</a>
       </div>`;
     return d;
   };
@@ -103,8 +96,7 @@
       try {
         const old = new URL(a.href);
         const hash = old.hash || '#inbox';
-        const target = `https://mail.google.com/mail/b/${encodeURIComponent(GMAIL_ACCOUNT)}/${hash}`;
-        a.href = gmailChooserUrl(target);
+        a.href = `https://mail.google.com/mail/?authuser=${encodeURIComponent(GMAIL_ACCOUNT)}${hash}`;
         a.dataset.gmailNormalized = '1';
       } catch (_) {}
     });
