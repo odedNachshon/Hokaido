@@ -1,5 +1,6 @@
 (() => {
-  const ASSET_VERSION = 'ui10';
+  const ASSET_VERSION = 'ui11';
+  const GMAIL_ACCOUNT = 'odedn72@gmail.com';
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
 
@@ -48,7 +49,17 @@
     '14.8': [{name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', messageId:'19fd1d80fb756f17', aliases:['Hotel Indigo שיבויה','Hotel Indigo']}]
   };
 
-  const gmailMessageUrl = hotel => `https://mail.google.com/mail/u/odedn72@gmail.com/#all/${hotel.messageId}`;
+  const gmailChooserUrl = target => {
+    const chooser = new URL('https://accounts.google.com/AccountChooser');
+    chooser.searchParams.set('Email', GMAIL_ACCOUNT);
+    chooser.searchParams.set('continue', target);
+    return chooser.toString();
+  };
+
+  const gmailMessageUrl = hotel => {
+    const target = `https://mail.google.com/mail/b/${encodeURIComponent(GMAIL_ACCOUNT)}/#all/${hotel.messageId}`;
+    return gmailChooserUrl(target);
+  };
 
   const hotelBubble = h => {
     const d = document.createElement('details');
@@ -88,10 +99,13 @@
 
   const normalizeOtherGmailLinks = () => {
     document.querySelectorAll('a[href*="mail.google.com/mail/"]').forEach(a => {
-      if (a.classList.contains('hotel-mail-cta')) return;
+      if (a.classList.contains('hotel-mail-cta') || a.dataset.gmailNormalized === '1') return;
       try {
-        const hash = new URL(a.href).hash;
-        a.href = `https://mail.google.com/mail/u/odedn72@gmail.com/${hash}`;
+        const old = new URL(a.href);
+        const hash = old.hash || '#inbox';
+        const target = `https://mail.google.com/mail/b/${encodeURIComponent(GMAIL_ACCOUNT)}/${hash}`;
+        a.href = gmailChooserUrl(target);
+        a.dataset.gmailNormalized = '1';
       } catch (_) {}
     });
   };
