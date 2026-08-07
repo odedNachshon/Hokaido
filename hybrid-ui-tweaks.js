@@ -14,11 +14,10 @@
       {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5837788989', aliases:['Hotel Indigo','המלון']}
     ],
     '6.8': [
-      {name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', aliases:['ReLabo']}
+      {name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', aliases:['צ׳ק־אין ב־ReLabo','ReLabo']}
     ],
     '7.8': [
-      {name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', aliases:['צ׳ק־אאוט מ־ReLabo','ReLabo']},
-      {name:"La’gent Plaza Hakodate Hokuto", platform:'Agoda', number:'1755948686', aliases:["La’gent Plaza","La'gent Plaza"]}
+      {name:"La’gent Plaza Hakodate Hokuto", platform:'Agoda', number:'1755948686', aliases:["צ׳ק־אין ב־La’gent Plaza","La’gent Plaza","La'gent Plaza"]}
     ],
     '8.8': [
       {name:'WE Hotel Toya - Dusit Collection', platform:'Booking.com', number:'5090390400', aliases:['צ׳ק־אין WE Hotel Toya','WE Hotel Toya']}
@@ -39,17 +38,13 @@
       {name:'Solaria Nishitetsu Hotel Sapporo', platform:'Booking.com', number:'6515535616', aliases:['צ׳ק־אין Solaria Nishitetsu','Solaria Nishitetsu']}
     ],
     '14.8': [
-      {name:'Solaria Nishitetsu Hotel Sapporo', platform:'Booking.com', number:'6515535616', aliases:['ארוחת בוקר במלון','Solaria Nishitetsu']},
       {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', aliases:['Hotel Indigo שיבויה','Hotel Indigo']}
-    ],
-    '15.8': [
-      {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', aliases:['צ׳ק־אאוט','Hotel Indigo','המלון']}
     ]
   };
 
   const gmailSearch = hotel => {
     const q = `"${hotel.number}" OR "${hotel.name}"`;
-    return `https://mail.google.com/mail/?authuser=odedn72@gmail.com#search/${encodeURIComponent(q)}`;
+    return `https://mail.google.com/mail/u/?authuser=odedn72@gmail.com#search/${encodeURIComponent(q)}`;
   };
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
@@ -67,8 +62,10 @@
     return d;
   };
 
+  const isCheckoutRow = row => /צ[׳']?ק[־-]?אאוט|check\s*-?\s*out/i.test(row.textContent);
+
   const findHotelRow = hotel => {
-    const rows = [...document.querySelectorAll('.schedule tbody tr')];
+    const rows = [...document.querySelectorAll('.schedule tbody tr')].filter(r => !isCheckoutRow(r));
     for (const alias of hotel.aliases || []) {
       const row = rows.find(r => r.textContent.includes(alias) && !r.querySelector(`[data-booking-number="${hotel.number}"]`));
       if (row) return row;
@@ -77,22 +74,34 @@
     return rows.find(r => nameBits.some(bit => r.textContent.includes(bit)) && !r.querySelector(`[data-booking-number="${hotel.number}"]`)) || null;
   };
 
+  const removeLegacyHotelMailBubble = cell => {
+    cell.querySelectorAll('.inline-mails').forEach(group => {
+      const text = group.textContent || '';
+      if (/מלון|hotel|La.?gent|ReLabo|Mahoroba|Vista|Solaria|Indigo|WE Hotel/i.test(text)) group.remove();
+    });
+  };
+
   const placeHotelBubbles = () => {
     document.querySelectorAll('.hotel-booking-group').forEach(el => el.remove());
+    document.querySelectorAll('.hotel-booking-inline').forEach(el => el.remove());
     const day = currentDay();
     const hotels = hotelByDay[day];
     if (!hotels?.length) return;
     hotels.forEach(h => {
-      if (document.querySelector(`[data-booking-number="${h.number}"]`)) return;
       const row = findHotelRow(h);
       const cell = row?.querySelector('td:last-child');
-      if (cell) cell.appendChild(hotelBubble(h));
+      if (!cell) return;
+      removeLegacyHotelMailBubble(cell);
+      cell.appendChild(hotelBubble(h));
     });
   };
 
   const forceCorrectGmailUser = () => {
     document.querySelectorAll('a[href*="mail.google.com/mail/"]').forEach(a => {
-      a.href = a.href.replace(/authuser=[^#&]+/i,'authuser=odedn72@gmail.com');
+      let href = a.getAttribute('href') || '';
+      const hashIndex = href.indexOf('#');
+      const hash = hashIndex >= 0 ? href.slice(hashIndex) : '';
+      a.setAttribute('href', `https://mail.google.com/mail/u/?authuser=odedn72@gmail.com${hash}`);
     });
   };
 
