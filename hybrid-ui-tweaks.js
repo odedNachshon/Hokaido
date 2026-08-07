@@ -1,5 +1,5 @@
 (() => {
-  const ASSET_VERSION = 'ui13';
+  const ASSET_VERSION = 'ui14';
   const GMAIL_ACCOUNT = 'odedn72@gmail.com';
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
@@ -57,9 +57,9 @@
     aliases:['איסוף רכב Budget','Budget Rent a Car']
   };
 
-  const gmailSearchUrl = (number, name) => {
-    const query = `"${number}" OR "${name}"`;
-    return `https://mail.google.com/mail/?authuser=${encodeURIComponent(GMAIL_ACCOUNT)}#search/${encodeURIComponent(query)}`;
+  const gmailSearchUrl = number => {
+    const encodedNumber = encodeURIComponent(`"${number}"`);
+    return `https://mail.google.com/mail/?authuser=${encodeURIComponent(GMAIL_ACCOUNT)}#search/${encodedNumber}`;
   };
 
   const bookingBubble = ({icon, title, name, platform, number}) => {
@@ -69,8 +69,8 @@
     d.innerHTML = `
       <summary><span class="hotel-icon">${icon}</span><span class="hotel-summary"><b>${title}</b><small>${name}</small></span><span class="hotel-chevron">⌄</span></summary>
       <div class="hotel-booking-body">
-        <div class="hotel-booking-meta"><span>${platform}</span><strong>${number}</strong></div>
-        <a class="hotel-mail-cta" target="_blank" rel="noopener" href="${gmailSearchUrl(number, name)}">✉️ פתח את מייל האישור</a>
+        <div class="hotel-booking-meta"><span>${platform}</span><button type="button" class="booking-number-copy" data-copy-number="${number}" aria-label="העתק מספר הזמנה ${number}"><span class="booking-number-value">${number}</span><span class="copy-hint">העתק</span></button></div>
+        <a class="hotel-mail-cta" target="_blank" rel="noopener" href="${gmailSearchUrl(number)}">✉️ חפש את האישור ב-Gmail</a>
       </div>`;
     return d;
   };
@@ -105,6 +105,60 @@
     placeBookingBubble(carBooking,{icon:'🚗',title:'פרטי הרכב וההזמנה'});
   };
 
+  const copyText = async text => {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+  };
+
+  const enableBookingCopy = () => {
+    if (document.body.dataset.bookingCopyReady === '1') return;
+    document.body.dataset.bookingCopyReady = '1';
+    document.addEventListener('click', async event => {
+      const btn = event.target.closest('.booking-number-copy');
+      if (!btn) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const number = btn.dataset.copyNumber;
+      try {
+        await copyText(number);
+        const hint = btn.querySelector('.copy-hint');
+        if (!hint) return;
+        const old = hint.textContent;
+        hint.textContent = 'הועתק ✓';
+        setTimeout(() => { hint.textContent = old; }, 1400);
+      } catch (_) {}
+    });
+  };
+
+  const decorateDriveRows = () => {
+    document.querySelectorAll('.schedule tbody tr').forEach(row => {
+      const cell = row.querySelector('td:last-child');
+      if (!cell) return;
+      const candidates = [...cell.querySelectorAll(':scope > strong, :scope > .row-heading strong')];
+      const title = candidates.find(el => !el.closest('.hotel-booking-bubble'));
+      if (!title || title.dataset.driveIcon === '1') return;
+      const text = title.textContent.trim();
+      if (!/^(נסיעה\b|Drive\b)/i.test(text)) return;
+      const icon = document.createElement('span');
+      icon.className = 'drive-icon';
+      icon.textContent = '🚗';
+      icon.setAttribute('aria-hidden','true');
+      title.prepend(icon);
+      title.dataset.driveIcon = '1';
+    });
+  };
+
   const normalizeOtherGmailLinks = () => {
     document.querySelectorAll('a[href*="mail.google.com/mail/"]').forEach(a => {
       if (a.classList.contains('hotel-mail-cta') || a.dataset.gmailNormalized === '1') return;
@@ -132,6 +186,8 @@
     formatTimes();
     placeHotelBubbles();
     placeCarBubble();
+    enableBookingCopy();
+    decorateDriveRows();
     normalizeOtherGmailLinks();
     versionDayLinks();
   };
