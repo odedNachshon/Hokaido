@@ -1,5 +1,5 @@
 (() => {
-  const ASSET_VERSION = 'ui12';
+  const ASSET_VERSION = 'ui13';
   const GMAIL_ACCOUNT = 'odedn72@gmail.com';
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
@@ -49,45 +49,60 @@
     '14.8': [{name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', aliases:['Hotel Indigo שיבויה','Hotel Indigo']}]
   };
 
+  const carBooking = {
+    day:'8.8',
+    name:'Budget Rent a Car — Hakodate Airport',
+    platform:'Budget',
+    number:'101847607',
+    aliases:['איסוף רכב Budget','Budget Rent a Car']
+  };
+
   const gmailSearchUrl = (number, name) => {
     const query = `"${number}" OR "${name}"`;
     return `https://mail.google.com/mail/?authuser=${encodeURIComponent(GMAIL_ACCOUNT)}#search/${encodeURIComponent(query)}`;
   };
 
-  const hotelBubble = h => {
+  const bookingBubble = ({icon, title, name, platform, number}) => {
     const d = document.createElement('details');
     d.className = 'hotel-booking-bubble hotel-booking-inline';
-    d.dataset.bookingNumber = h.number;
+    d.dataset.bookingNumber = number;
     d.innerHTML = `
-      <summary><span class="hotel-icon">🏨</span><span class="hotel-summary"><b>פרטי המלון וההזמנה</b><small>${h.name}</small></span><span class="hotel-chevron">⌄</span></summary>
+      <summary><span class="hotel-icon">${icon}</span><span class="hotel-summary"><b>${title}</b><small>${name}</small></span><span class="hotel-chevron">⌄</span></summary>
       <div class="hotel-booking-body">
-        <div class="hotel-booking-meta"><span>${h.platform}</span><strong>${h.number}</strong></div>
-        <a class="hotel-mail-cta" target="_blank" rel="noopener" href="${gmailSearchUrl(h.number, h.name)}">✉️ פתח את מייל האישור</a>
+        <div class="hotel-booking-meta"><span>${platform}</span><strong>${number}</strong></div>
+        <a class="hotel-mail-cta" target="_blank" rel="noopener" href="${gmailSearchUrl(number, name)}">✉️ פתח את מייל האישור</a>
       </div>`;
     return d;
   };
 
-  const findHotelRow = hotel => {
+  const findRowByAliases = aliases => {
     const rows = [...document.querySelectorAll('.schedule tbody tr')];
-    for (const alias of hotel.aliases || []) {
+    for (const alias of aliases || []) {
       const row = rows.find(r => r.textContent.includes(alias));
       if (row) return row;
     }
     return null;
   };
 
+  const placeBookingBubble = (booking, options) => {
+    if (document.querySelector(`[data-booking-number="${booking.number}"]`)) return;
+    const row = findRowByAliases(booking.aliases);
+    const cell = row?.querySelector('td:last-child');
+    if (!cell) return;
+    cell.querySelectorAll('.inline-mails').forEach(el => el.remove());
+    cell.appendChild(bookingBubble({...booking, ...options}));
+  };
+
   const placeHotelBubbles = () => {
     document.querySelectorAll('.hotel-booking-group').forEach(el => el.remove());
     const hotels = hotelByDay[currentDay()];
     if (!hotels?.length) return;
-    hotels.forEach(h => {
-      if (document.querySelector(`[data-booking-number="${h.number}"]`)) return;
-      const row = findHotelRow(h);
-      const cell = row?.querySelector('td:last-child');
-      if (!cell) return;
-      cell.querySelectorAll('.inline-mails').forEach(el => el.remove());
-      cell.appendChild(hotelBubble(h));
-    });
+    hotels.forEach(h => placeBookingBubble(h,{icon:'🏨',title:'פרטי המלון וההזמנה'}));
+  };
+
+  const placeCarBubble = () => {
+    if (currentDay() !== carBooking.day) return;
+    placeBookingBubble(carBooking,{icon:'🚗',title:'פרטי הרכב וההזמנה'});
   };
 
   const normalizeOtherGmailLinks = () => {
@@ -116,6 +131,7 @@
     patchDay8Morning();
     formatTimes();
     placeHotelBubbles();
+    placeCarBubble();
     normalizeOtherGmailLinks();
     versionDayLinks();
   };
