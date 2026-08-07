@@ -1,14 +1,14 @@
 (() => {
-  const ASSET_VERSION = 'ui14';
+  const ASSET_VERSION = 'ui15';
   const GMAIL_ACCOUNT = 'odedn72@gmail.com';
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
 
-  const patchDay8Morning = () => {
+  const patchDay8Plan = () => {
     if (currentDay() !== '8.8') return;
     const rows = [...document.querySelectorAll('.schedule tbody tr')];
-    if (rows.length < 3) return;
-    if (rows[0].textContent.includes('Hakodate Morning Market')) return;
+    if (rows.length < 8) return;
+    if (rows[4]?.textContent.includes('Kikuchi')) return;
 
     const setRow = (row, time, title, desc, mapLabel, mapQuery) => {
       const timeCell = row.querySelector('td:first-child');
@@ -18,9 +18,14 @@
       contentCell.innerHTML = `<strong>${title}</strong><br><span>${desc}</span>${mapLabel ? `<div class="inline-maps"><a class="inline-map" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}">${mapLabel}</a></div>` : ''}`;
     };
 
-    setRow(rows[0], '07:30–08:30', 'Hakodate Morning Market + ארוחת בוקר', 'ללכת לשוק לפני איסוף הרכב, כשהוא פעיל ונוח להגיע אליו ברגל מאזור התחנה. לאכול כאן ארוחת בוקר/פירות ים.', 'שוק הבוקר', 'Hakodate Morning Market');
-    setRow(rows[1], '08:30–08:45', 'חזרה למלון וצ׳ק־אאוט', 'איסוף מזוודות ויציאה לשדה התעופה.');
-    setRow(rows[2], '09:00–09:45', 'נסיעה לשדה התעופה', 'להשאיר זמן להגיע לסניף ההשכרה בנחת.', 'Hakodate Airport', 'Hakodate Airport');
+    setRow(rows[0], '08:00–08:35', 'בוקר רגוע + צ׳ק־אאוט', 'בלי ארוחת בוקר גדולה במלון — יוצאים בזמן ומשאירים את הארוחה לאחר איסוף הרכב.');
+    setRow(rows[1], '08:45–09:45', 'נסיעה לשדה התעופה', 'מומלץ במונית ישירות מ־Shin-Hakodate-Hokuto כדי להגיע בנחת לפני איסוף הרכב.', 'Hakodate Airport', 'Hakodate Airport');
+    setRow(rows[2], '09:45–10:00', 'הגעה ל־Budget והתארגנות', 'זמן קצר לשאטל/דלפק ולמסמכים לפני שעת האיסוף.', 'Budget', 'Budget Rent a Car Hakodate Airport');
+    setRow(rows[3], '10:00', 'איסוף רכב Budget', 'Reservation 101847607. צילום הרכב, ETC, GPS, דלק ונזקים קודמים.', 'Budget', 'Budget Rent a Car Hakodate Airport');
+    setRow(rows[4], '10:20–11:00', 'Kikuchi — ארוחת בוקר / בראנץ׳', 'עצירה קצרה ב־kissaten מקומי בדרך לעיר: קפה, סנדוויצ׳ים ומנות קלות. לא למשוך יותר מדי זמן.', 'Kikuchi', 'Coffee Room Kikuchi Hakodate');
+    setRow(rows[5], '11:00–11:20', 'נסיעה ל־Goryokaku', 'ממשיכים מ־Kikuchi ישירות ל־Goryokaku.', 'Goryokaku', 'Goryokaku Tower');
+    setRow(rows[6], '11:20–12:50', 'Goryokaku', 'מגדל תצפית + הליכה קצרה. אין צורך בארוחת צהריים נוספת אחרי Kikuchi.', 'Goryokaku Tower', 'Goryokaku Tower');
+    setRow(rows[7], '13:00–16:00', 'נסיעה ל־Lake Toya', 'כולל עצירת שירותים/קפה קצרה לפי הצורך.', 'WE Hotel Toya', 'WE Hotel Toya');
   };
 
   const formatTimes = () => {
@@ -182,7 +187,7 @@
   };
 
   const run = () => {
-    patchDay8Morning();
+    patchDay8Plan();
     formatTimes();
     placeHotelBubbles();
     placeCarBubble();
