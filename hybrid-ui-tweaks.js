@@ -11,39 +11,39 @@
 
   const hotelByDay = {
     '5.8': [
-      {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5837788989', note:'לינה 5–6.8'}
+      {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5837788989', aliases:['Hotel Indigo','המלון']}
     ],
     '6.8': [
-      {name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', note:'לינה 6–7.8'}
+      {name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', aliases:['ReLabo']}
     ],
     '7.8': [
-      {name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', note:'מלון הבוקר / צ׳ק־אאוט'},
-      {name:"La’gent Plaza Hakodate Hokuto", platform:'Agoda', number:'1755948686', note:'לינה 7–8.8'}
+      {name:'ReLabo -Medical Spa & Stay-', platform:'Booking.com', number:'6654249708', aliases:['צ׳ק־אאוט מ־ReLabo','ReLabo']},
+      {name:"La’gent Plaza Hakodate Hokuto", platform:'Agoda', number:'1755948686', aliases:["La’gent Plaza","La'gent Plaza"]}
     ],
     '8.8': [
-      {name:'WE Hotel Toya - Dusit Collection', platform:'Booking.com', number:'5090390400', note:'לינה 8–9.8'}
+      {name:'WE Hotel Toya - Dusit Collection', platform:'Booking.com', number:'5090390400', aliases:['צ׳ק־אין WE Hotel Toya','WE Hotel Toya']}
     ],
     '9.8': [
-      {name:'Hotel Mahoroba', platform:'Booking.com', number:'6550170726', note:'לינה 9–10.8'}
+      {name:'Hotel Mahoroba', platform:'Booking.com', number:'6550170726', aliases:['צ׳ק־אין Hotel Mahoroba','Hotel Mahoroba']}
     ],
     '10.8': [
-      {name:'La Vista Furano Hills', platform:'Booking.com', number:'5675536037', note:'לינה 10–12.8'}
+      {name:'La Vista Furano Hills', platform:'Booking.com', number:'5675536037', aliases:['צ׳ק־אין La Vista Furano Hills','La Vista Furano Hills']}
     ],
     '11.8': [
-      {name:'La Vista Furano Hills', platform:'Booking.com', number:'5675536037', note:'לילה שני · 10–12.8'}
+      {name:'La Vista Furano Hills', platform:'Booking.com', number:'5675536037', aliases:['חזרה למלון','La Vista Furano Hills']}
     ],
     '12.8': [
-      {name:'La Vista Daisetsuzan', platform:'Agoda', number:'1755974229', note:'לינה 12–13.8'}
+      {name:'La Vista Daisetsuzan', platform:'Agoda', number:'1755974229', aliases:['צ׳ק־אין La Vista Daisetsuzan','La Vista Daisetsuzan']}
     ],
     '13.8': [
-      {name:'Solaria Nishitetsu Hotel Sapporo', platform:'Booking.com', number:'6515535616', note:'לינה 13–14.8'}
+      {name:'Solaria Nishitetsu Hotel Sapporo', platform:'Booking.com', number:'6515535616', aliases:['צ׳ק־אין Solaria Nishitetsu','Solaria Nishitetsu']}
     ],
     '14.8': [
-      {name:'Solaria Nishitetsu Hotel Sapporo', platform:'Booking.com', number:'6515535616', note:'מלון הבוקר / צ׳ק־אאוט'},
-      {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', note:'לינה 14–15.8'}
+      {name:'Solaria Nishitetsu Hotel Sapporo', platform:'Booking.com', number:'6515535616', aliases:['ארוחת בוקר במלון','Solaria Nishitetsu']},
+      {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', aliases:['Hotel Indigo שיבויה','Hotel Indigo']}
     ],
     '15.8': [
-      {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', note:'מלון הבוקר / צ׳ק־אאוט'}
+      {name:'Hotel Indigo Tokyo Shibuya', platform:'Booking.com', number:'5466329081', aliases:['צ׳ק־אאוט','Hotel Indigo','המלון']}
     ]
   };
 
@@ -54,25 +54,40 @@
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
 
-  const addHotelBubbles = () => {
-    if (document.querySelector('.hotel-booking-group')) return;
+  const hotelBubble = h => {
+    const d = document.createElement('details');
+    d.className = 'hotel-booking-bubble hotel-booking-inline';
+    d.dataset.bookingNumber = h.number;
+    d.innerHTML = `
+      <summary><span class="hotel-icon">🏨</span><span class="hotel-summary"><b>פרטי המלון וההזמנה</b><small>${h.name}</small></span><span class="hotel-chevron">⌄</span></summary>
+      <div class="hotel-booking-body">
+        <div class="hotel-booking-meta"><span>${h.platform}</span><strong>${h.number}</strong></div>
+        <a class="hotel-mail-cta" target="_blank" rel="noopener" href="${gmailSearch(h)}">✉️ פתח אישור ב-Gmail</a>
+      </div>`;
+    return d;
+  };
+
+  const findHotelRow = hotel => {
+    const rows = [...document.querySelectorAll('.schedule tbody tr')];
+    for (const alias of hotel.aliases || []) {
+      const row = rows.find(r => r.textContent.includes(alias) && !r.querySelector(`[data-booking-number="${hotel.number}"]`));
+      if (row) return row;
+    }
+    const nameBits = hotel.name.split(/\s+/).filter(x => x.length > 4);
+    return rows.find(r => nameBits.some(bit => r.textContent.includes(bit)) && !r.querySelector(`[data-booking-number="${hotel.number}"]`)) || null;
+  };
+
+  const placeHotelBubbles = () => {
+    document.querySelectorAll('.hotel-booking-group').forEach(el => el.remove());
     const day = currentDay();
     const hotels = hotelByDay[day];
     if (!hotels?.length) return;
-    const anchor = document.querySelector('.day-nav') || document.querySelector('main .panel');
-    if (!anchor) return;
-    const group = document.createElement('section');
-    group.className = 'hotel-booking-group';
-    group.setAttribute('aria-label','פרטי מלונות');
-    group.innerHTML = hotels.map(h => `
-      <details class="hotel-booking-bubble">
-        <summary><span class="hotel-icon">🏨</span><span class="hotel-summary"><b>${h.name}</b><small>${h.note}</small></span><span class="hotel-chevron">⌄</span></summary>
-        <div class="hotel-booking-body">
-          <div class="hotel-booking-meta"><span>${h.platform}</span><strong>${h.number}</strong></div>
-          <a class="hotel-mail-cta" target="_blank" rel="noopener" href="${gmailSearch(h)}">✉️ פתח אישור ב-Gmail</a>
-        </div>
-      </details>`).join('');
-    anchor.insertAdjacentElement('afterend', group);
+    hotels.forEach(h => {
+      if (document.querySelector(`[data-booking-number="${h.number}"]`)) return;
+      const row = findHotelRow(h);
+      const cell = row?.querySelector('td:last-child');
+      if (cell) cell.appendChild(hotelBubble(h));
+    });
   };
 
   const forceCorrectGmailUser = () => {
@@ -83,7 +98,7 @@
 
   const run = () => {
     splitTimes();
-    addHotelBubbles();
+    placeHotelBubbles();
     forceCorrectGmailUser();
   };
 
