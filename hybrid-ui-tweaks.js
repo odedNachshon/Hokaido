@@ -51,10 +51,11 @@
   };
 
   const placeHotelBubbles = () => {
-    document.querySelectorAll('.hotel-booking-group,.hotel-booking-inline').forEach(el => el.remove());
+    document.querySelectorAll('.hotel-booking-group').forEach(el => el.remove());
     const hotels = hotelByDay[currentDay()];
     if (!hotels?.length) return;
     hotels.forEach(h => {
+      if (document.querySelector(`[data-booking-number="${h.number}"]`)) return;
       const row = findHotelRow(h);
       const cell = row?.querySelector('td:last-child');
       if (!cell) return;
