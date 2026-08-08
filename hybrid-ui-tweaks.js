@@ -1,5 +1,5 @@
 (() => {
-  const ASSET_VERSION = 'ui16';
+  const ASSET_VERSION = 'ui19';
   const GMAIL_ACCOUNT = 'odedn72@gmail.com';
 
   const currentDay = () => document.querySelector('.navlinks [aria-current="page"]')?.textContent?.trim();
@@ -13,30 +13,37 @@
   const patchDay8Plan = () => {
     if (currentDay() !== '8.8') return;
     const tbody = document.querySelector('.schedule tbody');
-    if (!tbody || tbody.dataset.ui16Plan === '1') return;
+    if (!tbody) return;
+
+    const text = tbody.textContent || '';
+    const alreadyCorrect = text.includes('Kikuchi') && text.includes('Onuma Quasi-National Park') && text.includes('WE Hotel Toya') && !/Morning Market|Goryokaku/i.test(text);
+    if (alreadyCorrect) {
+      tbody.dataset.ui19Plan = '1';
+      return;
+    }
 
     const rows = [
-      ['08:00–08:35','בוקר רגוע + צ׳ק־אאוט','בלי ארוחת בוקר גדולה במלון — יוצאים בזמן ומשאירים את הארוחה לאחר איסוף הרכב.'],
-      ['08:45–09:45','נסיעה לשדה התעופה · כ־60 דק׳','מונית ישירות מ־Shin-Hakodate-Hokuto לאזור Hakodate Airport / Budget, עם מרווח לפני האיסוף.','Hakodate Airport','Hakodate Airport'],
+      ['08:00–08:35','בוקר רגוע + צ׳ק־אאוט','בלי ארוחת בוקר גדולה במלון — משאירים את הארוחה לאחר איסוף הרכב.'],
+      ['08:45–09:45','נסיעה לשדה התעופה · כ־60 דק׳','מונית ישירות מ־Shin-Hakodate-Hokuto ל־Hakodate Airport / Budget, עם מרווח לפני האיסוף.','Hakodate Airport','Hakodate Airport'],
       ['09:45–10:00','הגעה ל־Budget והתארגנות','זמן לשאטל/דלפק ולמסמכים לפני שעת האיסוף.','Budget','Budget Rent a Car Hakodate Airport'],
       ['10:00','איסוף רכב Budget','Reservation 101847607. צילום הרכב, ETC, GPS, דלק ונזקים קודמים.','Budget','Budget Rent a Car Hakodate Airport'],
       ['10:05–10:20','נסיעה ל־Kikuchi · כ־15 דק׳','עצירה ראשונה קצרה אחרי האיסוף, באזור Yunokawa.','Kikuchi','Coffee Room Kikuchi Hakodate'],
       ['10:20–11:00','Kikuchi — ארוחת בוקר / בראנץ׳','קפה, סנדוויצ׳ים ומנות קלות. לא למשוך יותר מדי זמן כדי להשאיר מקום לארוחת הערב במלון.','Kikuchi','Coffee Room Kikuchi Hakodate'],
-      ['11:00–11:20','נסיעה ל־Goryokaku · כ־20 דק׳','ממשיכים מ־Kikuchi ישירות ל־Goryokaku.','Goryokaku','Goryokaku Tower'],
-      ['11:20–12:50','Goryokaku','מגדל תצפית + הליכה קצרה.','Goryokaku Tower','Goryokaku Tower'],
-      ['12:50–13:30','נסיעה לכיוון Onuma · כ־40 דק׳','עצירה אופציונלית בדרך צפונה; לא חוזרים לתוך Hakodate.','Onuma Park','Onuma Quasi-National Park Hokkaido'],
-      ['13:30–14:00','Late lunch / snack אופציונלי — Onuma','רק אם רעבים: משהו קל ומהיר. ארוחת הערב במלון כלולה ומתחילה ב־17:30.','Onuma Park','Onuma Quasi-National Park Hokkaido'],
-      ['14:00–16:10','נסיעה ל־WE Hotel Toya · כ־2 ש׳ 10 דק׳','להשאיר מרווח קטן לעצירת שירותים/קפה לפי הצורך.','WE Hotel Toya','WE Hotel Toya'],
-      ['16:10–16:30','צ׳ק־אין WE Hotel Toya','צ׳ק־אין מ־15:00. ארוחת ערב וארוחת בוקר כלולות בהזמנה.','WE Hotel Toya','WE Hotel Toya'],
-      ['16:30–17:30','מנוחה / אונסן / מרפסת','זמן להתארגן וליהנות מהנוף לפני ארוחת הערב.'],
+      ['11:00–11:45','נסיעה ל־Onuma Quasi-National Park · כ־45 דק׳','מדלגים על Goryōkaku ונוסעים ישר צפונה ל־Onuma.','Onuma Park','Onuma Quasi-National Park Hokkaido'],
+      ['11:45–13:20','Onuma Quasi-National Park','כשעה וחצי לטיול בין האגם, האיים והגשרים. אם מזג האוויר יפה אפשר לבחור מסלול הליכה ארוך יותר; אם רעבים, משלבים משהו קל בסוף.','Onuma Park','Onuma Quasi-National Park Hokkaido'],
+      ['13:20–13:50','Late lunch / snack אופציונלי — Onuma','רק אם רעבים: משהו קל ומהיר. ארוחת הערב במלון כלולה ומתחילה ב־17:30.','Onuma Park','Onuma Quasi-National Park Hokkaido'],
+      ['13:50–16:00','נסיעה ל־WE Hotel Toya · כ־2 ש׳ 10 דק׳','להשאיר מרווח קטן לעצירת שירותים/קפה לפי הצורך.','WE Hotel Toya','WE Hotel Toya'],
+      ['16:00–16:25','צ׳ק־אין WE Hotel Toya','צ׳ק־אין מ־15:00. ארוחת ערב וארוחת בוקר כלולות בהזמנה.','WE Hotel Toya','WE Hotel Toya'],
+      ['16:25–17:30','מנוחה / אונסן / מרפסת','זמן להתארגן וליהנות מהנוף לפני ארוחת הערב.'],
       ['17:30–19:00','ארוחת ערב במלון — כלולה','EZO Cuisine. חלון ארוחת הערב 17:30–21:00; הזמנה אחרונה ב־20:00.'],
-      ['19:15–20:20','Lake Toya — הליכה על שפת האגם','הליכה רגועה, שקיעה ותמונות.','Lake Toya','Lake Toya'],
-      ['20:45–21:05','Lake Toya Long Run Fireworks','לבדוק באותו יום שלא בוטל בגלל רוח או מזג אוויר.','Lake Toya Onsen','Lake Toya Onsen'],
+      ['19:15–20:20','Lake Toya — הליכה על שפת האגם','הליכה רגועה, שקיעה ותמונות.','Lake Toya','Lake Toya Hokkaido'],
+      ['20:45–21:05','Lake Toya Long Run Fireworks','לבדוק באותו יום שלא בוטל בגלל רוח או מזג אוויר.','Lake Toya Onsen','Lake Toya Onsen Hokkaido'],
       ['21:05–22:00','אונסן / שתייה / מנוחה','לסיים את היום רגוע.']
     ];
 
     tbody.replaceChildren(...rows.map(r => makeRow(...r)));
-    tbody.dataset.ui16Plan = '1';
+    tbody.dataset.ui19Plan = '1';
+    setTimeout(() => document.dispatchEvent(new Event('ui17planready')), 0);
   };
 
   const formatTimes = () => {
