@@ -5,9 +5,8 @@
   const copyText = async text => {
     if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
     const ta = document.createElement('textarea');
+    ta.className = 'clipboard-proxy';
     ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
     document.body.appendChild(ta);
     ta.select();
     document.execCommand('copy');
