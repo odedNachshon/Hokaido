@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = 'ui30';
+  const VERSION = 'ui31';
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Tokyo',
     year: 'numeric',
