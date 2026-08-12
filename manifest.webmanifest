@@ -1,0 +1,17 @@
+{
+  "name": "Japan 2026",
+  "short_name": "Japan 2026",
+  "start_url": "./hybrid-preview.html?v=ui30",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "./app-icon.svg?v=ui30",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
